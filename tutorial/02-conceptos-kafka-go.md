@@ -24,9 +24,59 @@ Go es perfecto para esto porque maneja "hacer muchas cosas a la vez" de forma na
 
 ### ¿Cómo se unen?
 Nuestra arquitectura será así:
-1.  Un microservicio (Producer) recibe una acción HTTP (ej: usuario ataca).
+
+```mermaid
+graph TD
+    User((Usuario))
+    
+    subgraph "Tu Computadora (Localhost)"
+        Producer[Go Producer]
+        Consumer[Go Consumer]
+        
+        subgraph "Docker"
+            Kafka{"Kafka (KRaft)"}
+        end
+    end
+
+    User -- "1. go run... produce" --> Producer
+    User -- "2. go run... consume" --> Consumer
+    Producer -- "3. Envía Evento" --> Kafka
+    Kafka -- "4. Notifica" --> Consumer
+    
+    style Kafka fill:#f9f,stroke:#333,stroke-width:2px
+    style Producer fill:#bbf,stroke:#333
+    style Consumer fill:#bfb,stroke:#333
+```
+
+1.  Un microservicio (Producer) recibe una acción (o comando CLI).
 2.  Envía el evento a Kafka.
 3.  Otro microservicio (Consumer) ve el evento en Kafka y reacciona.
+
+### Flujo de Mensajes (Sequence Diagram)
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant P as Producer (Go)
+    participant K as Kafka (Docker)
+    participant C as Consumer (Go)
+
+    Note over U, C: Flujo de una Batalla RPG
+
+    U->>P: Ejecuta comando attack
+    activate P
+    P->>P: Crea mensaje JSON (Heroe ataca...)
+    P->>K: PUSH "Battle Event" (Topic: rpg-battles)
+    deactivate P
+    
+    Note right of K: Kafka guarda el evento en disco
+    
+    activate C
+    K-->>C: PULL (Nuevo Evento Disponible)
+    C->>C: Procesa daño (Log)
+    C-->>U: Imprime resultado en consola
+    deactivate C
+```
 
 ---
 **🚀 Siguiente Paso**: Vamos a implementar nuestro primer Productor y Consumidor en Go para ver esto en acción.
