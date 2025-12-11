@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Producer",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/projects/section-02-kafka-basics/cmd/tutorial-basics/main.go",
+            "cwd": "${workspaceFolder}/projects/section-02-kafka-basics",
+            "args": ["produce"]
+        },
+        {
+            "name": "Debug Consumer",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/projects/section-02-kafka-basics/cmd/tutorial-basics/main.go",
+            "cwd": "${workspaceFolder}/projects/section-02-kafka-basics",
+            "args": ["consume"]
+        }
+    ]
+}

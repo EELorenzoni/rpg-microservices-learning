@@ -15,5 +15,6 @@ bin/
 .DS_Store
 
 # IDEs
-.vscode/
+# .vscode/
 .idea/
+__debug_bin*
