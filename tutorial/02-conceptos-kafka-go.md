@@ -79,4 +79,37 @@ sequenceDiagram
 ```
 
 ---
+
+## 📘 Diccionario Go para Node.js Developers
+Si vienes de Javascript, esto te servirá para traducir conceptos mentales:
+
+| Concepto | En Node.js (JS) | En Go | Explicación |
+| :--- | :--- | :--- | :--- |
+| **Dependencias** | `package.json` | `go.mod` | Define el nombre del módulo y qué librerías usa. |
+| **Lockfile** | `package-lock.json` | `go.sum` | Checksums criptográficos para asegurar que nadie modificó las librerías. |
+| **Limpieza** | `try...finally` | `defer` | Ejecuta código (como cerrar conexiones) al final de la función, pase lo que pase. |
+| **Async** | `Promise` / `async-await` | Bloqueante (síncrono) | En Go el código *parece* síncrono. La concurrencia se maneja "por fuera" con Goroutines. |
+| **Control** | `AbortController` | `context.Context` | Permite cancelar operaciones largas, poner timeouts y pasar metadata entre funciones. |
+
+> **Nota sobre `go.mod`**: A diferencia de `node_modules` que pesa gigas y está en tu proyecto, Go guarda las librerías compiladas en una caché global en tu sistema (`$GOPATH`). Tu proyecto se mantiene ligero.
+
+---
+
+## 🧠 Kafka Deep Dive: Lo que pasa "bajo el capó"
+
+### 1. ¿Por qué usamos `Key` en los mensajes?
+Habrás notado que enviamos `Key: "Key-1"`. ¿Por qué no solo el valor?
+
+Kafka garantiza orden **solo dentro de una partición**.
+*   Si envías 10 mensajes sin Key, Kafka los reparte aleatoriamente (Round Robin) entre las particiones disponibles.
+*   Si envías mensajes con la misma Key (ej: `userID: 123`), Kafka asegura que **todos** vayan a la misma partición.
+*   **Resultado**: Aseguramos que los eventos de un mismo usuario se procesen en el orden correcto (no queremos procesar "Murió" antes que "Recibió Daño").
+
+### 2. Brokers vs Controllers (En nuestro Docker)
+En el `docker-compose.yml` verás configuraciones como `KRaft`.
+*   **Broker**: Es el servidor que almacena los datos (el disco duro inteligente).
+*   **Controller**: Es el "jefe". Decide en qué broker se guarda cada copia de los datos.
+*   **KRaft**: Antiguamente Kafka necesitaba otro software llamado *Zookeeper* para elegir al jefe. Ahora Kafka es lo suficientemente listo para votarse a sí mismo (Raft Consensus), simplificando nuestra infraestructura.
+
+---
 **🚀 Siguiente Paso**: Vamos a implementar nuestro primer Productor y Consumidor en Go para ver esto en acción.
