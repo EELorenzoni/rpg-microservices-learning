@@ -17,6 +17,7 @@ type Kafka struct {
 }
 
 // NewKafka inicializa la conexión.
+// Retorna: *Kafka (Dirección de memoria del struct creado).
 func NewKafka(brokerAddress string, topic string) *Kafka {
 	// 1. Intentar crear el topic explícitamente (Mejor práctica que auto-create)
 	// Conectamos "crudo" al broker líder (o cualquiera)
@@ -53,12 +54,25 @@ func NewKafka(brokerAddress string, topic string) *Kafka {
 
 	fmt.Printf("🔌 INFRA (Kafka): Conectado a %s -> Topic: %s\n", brokerAddress, topic)
 
+	// 💡 POINTERS (Sintaxis):
+	// Usamos '&' (address of) para devolver la dirección del struct literal.
 	return &Kafka{
 		writer: writer,
 	}
 }
 
 // Save serializa el héroe a JSON y lo envía a Kafka.
+//
+// 💡 POINTERS: (repo *Kafka) vs (hero *domain.Hero)
+//  1. (repo *Kafka): NECESARIO. El 'writer' de Kafka mantiene un pool de conexiones TCP interno.
+//     Si copiáramos el repo (por valor), podríamos duplicar/perder el estado de la conexión.
+//     Queremos que TODOS usen LA MISMA conexión abierta.
+//  2. (hero *domain.Hero): EFICIENCIA. No queremos copiar todos los datos del héroe, solo leerlos.
+//
+// 💡 POINTERS (Sintaxis):
+// - `(repo *Kafka)`: Receiver de tipo Puntero.
+// - `(hero *domain.Hero)`: Argumento de tipo Puntero.
+// - Dentro de la función, usamos `repo.writer` directamente. Go hace "dereference" automático (*repo).writer.
 func (repo *Kafka) Save(hero *domain.Hero) error {
 	// 1. Serializar a JSON
 	heroJSON, err := json.Marshal(hero)

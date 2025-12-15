@@ -30,6 +30,11 @@ type Service struct {
 }
 
 // New crea una instancia del servicio.
+// Retorna *Service (un puntero).
+//
+// 💡 POINTERS (Sintaxis):
+// 1. `*Service`: Indico que devuelvo una dirección.
+// 2. `&Service{...}`: Creo el objeto y tomo su dirección.
 func New(repo ports.HeroRepository) *Service {
 	return &Service{
 		repo: repo,
@@ -37,19 +42,20 @@ func New(repo ports.HeroRepository) *Service {
 }
 
 // Run ejecuta la lógica de negocio.
+// Receiver (s *Service):
 func (s *Service) Run(cmd CreateHeroCommand) error {
 	fmt.Printf("➡️  APP: Ejecutando caso de uso CreateHero para %s\n", cmd.Name)
 
 	// 1. Llamar al Dominio (Factory)
-	hero, err := domain.NewHero(cmd.ID, cmd.Name, cmd.Power)
+	// 💡 POINTERS: NewHero devuelve *Hero. 'hero' aquí es un puntero (una dirección de memoria: 0x1234abcd).
+	hero, err := domain.NewHero(cmd.ID, cmd.Name)
 	if err != nil {
-		// Retornamos el error tal cual.
-		// En un sistema real, podríamos envolverlo en algo más descriptivo.
-		return fmt.Errorf("error creando entidad hero: %w", err)
+		return fmt.Errorf("error creando hero: %w", err)
 	}
 
-	// 2. Usar el Puerto (Repository) para guardar
-	// No sabemos si esto va a Kafka, a disco o a la nube. No nos importa.
+	// 2. Llamar al Repositorio
+	// 💡 POINTERS: repo.Save espera un *Hero. Como 'hero' YA es un *Hero, se lo pasamos directo.
+	// Si 'hero' fuera valor, tendríamos que usar `repo.Save(&hero)`.
 	if err := s.repo.Save(hero); err != nil {
 		return fmt.Errorf("error guardando hero en repositorio: %w", err)
 	}
