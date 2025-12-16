@@ -10,6 +10,20 @@ Ahora nuestro sistema soporta dos flujos principales:
 2.  **Query (Leer)**: `GET /heroes?id=...` -> Consulta el estado actual.
 
 ```mermaid
+%%{
+  init: {
+    'theme': 'dark',
+    'themeVariables': {
+      'primaryColor': '#1f2937',
+      'edgeLabelBackground':'#1f2937',
+      'tertiaryColor': '#111827',
+      'mainBkg': '#1f2937',
+      'nodeBorder': '#8b5cf6',
+      'lineColor': '#3b82f6',
+      'textColor': '#f3f4f6'
+    }
+  }
+}%%
 sequenceDiagram
     participant User
     participant API as 🌐 API (HTTP)
@@ -73,7 +87,24 @@ Usaremos **Platform Kafka Admin** para proveer esa infra.
     ```
 3.  **Ejecutar Servicio**:
     Nuestro código se conectará automáticamente al puerto `9094` (definido por la plataforma).
- | El Servicio PIDE sus dependencias (interfaces), no las crea ("new Kafka()"). El `main.go` se las inyecta. |
+    ```bash
+    make run-api
+    ```
+
+### 🧪 Probando el Sistema Completo
+
+**1. Crear un Héroe (Command)**:
+```bash
+curl -X POST -d '{"id":"h-100", "name":"Sylvanas", "role":"Ranger"}' http://localhost:8081/heroes
+```
+*   Deberías ver un `201 Created`.
+*   En el log del Consumer: `✅ EVENTO RECIBIDO: HeroCreated`.
+
+**2. Consultar el Héroe (Query)**:
+```bash
+curl "http://localhost:8081/heroes?id=h-100"
+```
+*   Respuesta: `{"id":"h-100","name":"Sylvanas","role":"Ranger",...}`
 
 ## 4. Conclusión
 

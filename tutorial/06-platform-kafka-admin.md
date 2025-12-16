@@ -11,6 +11,20 @@ Hemos creado el proyecto `projects/platform-kafka-admin` para que sea esa "Ofici
 ## 1. Arquitectura Centralizada
 
 ```mermaid
+%%{
+  init: {
+    'theme': 'dark',
+    'themeVariables': {
+      'primaryColor': '#1f2937',
+      'edgeLabelBackground':'#1f2937',
+      'tertiaryColor': '#111827',
+      'mainBkg': '#1f2937',
+      'nodeBorder': '#8b5cf6',
+      'lineColor': '#3b82f6',
+      'textColor': '#f3f4f6'
+    }
+  }
+}%%
 graph TD
     Services[Microservicios]
     Admin[Admin API :3000]

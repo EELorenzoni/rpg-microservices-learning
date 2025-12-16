@@ -7,6 +7,20 @@ En esta sección aclaramos dudas cruciales sobre el diseño arquitectónico que 
 Aquí tienes el diagrama exacto de cómo viaja la petición "Crear Héroe" a través de nuestras capas refactorizadas.
 
 ```mermaid
+%%{
+  init: {
+    'theme': 'dark',
+    'themeVariables': {
+      'primaryColor': '#1f2937',
+      'edgeLabelBackground':'#1f2937',
+      'tertiaryColor': '#111827',
+      'mainBkg': '#1f2937',
+      'nodeBorder': '#8b5cf6',
+      'lineColor': '#3b82f6',
+      'textColor': '#f3f4f6'
+    }
+  }
+}%%
 sequenceDiagram
     participant User
     participant CLI as 🎮 Handler (Adapter)
