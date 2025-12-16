@@ -19,37 +19,13 @@ type Kafka struct {
 // NewKafka inicializa la conexión.
 // Retorna: *Kafka (Dirección de memoria del struct creado).
 func NewKafka(brokerAddress string, topic string) *Kafka {
-	// 1. Intentar crear el topic explícitamente (Mejor práctica que auto-create)
-	// Conectamos "crudo" al broker líder (o cualquiera)
-	conn, err := kafka.Dial("tcp", brokerAddress)
-	if err != nil {
-		fmt.Printf("⚠️ WARN: No se pudo conectar para crear topic: %v\n", err)
-	} else {
-		defer conn.Close()
-
-		topics := []kafka.TopicConfig{
-			{
-				Topic:             topic,
-				NumPartitions:     1,
-				ReplicationFactor: 1,
-			},
-		}
-
-		err = conn.CreateTopics(topics...)
-		if err != nil {
-			// Si ya existe, dará error, pero no importa.
-			// fmt.Printf("ℹ️ Info: Topic creation result: %v\n", err)
-		} else {
-			fmt.Printf("✨ INFRA (Kafka): Topic '%s' creado exitosamente!\n", topic)
-		}
-	}
-
-	// 2. Configurar el Writer (Productor)
+	// 1. Configurar el Writer (Productor)
+	// Ya no creamos el topic aquí. Asumimos que la "Plataforma" lo creó.
 	writer := &kafka.Writer{
 		Addr:                   kafka.TCP(brokerAddress),
 		Topic:                  topic,
 		Balancer:               &kafka.LeastBytes{},
-		AllowAutoTopicCreation: true, // Por si acaso
+		AllowAutoTopicCreation: false, // Forzamos a que exista
 	}
 
 	fmt.Printf("🔌 INFRA (Kafka): Conectado a %s -> Topic: %s\n", brokerAddress, topic)

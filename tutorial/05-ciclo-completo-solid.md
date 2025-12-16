@@ -60,8 +60,20 @@ Durante todo el tutorial hemos aplicado patrones SOLID casi sin darnos cuenta. A
 | **S** | **SRP** (Responsabilidad Única) | `create.go` vs `get.go` | Hemos separado la lógica de CREAR de la de LEER en archivos distintos. Cada archivo tiene una única razón para cambiar. |
 | **O** | **OCP** (Abierto/Cerrado) | `EventBus` | Agregamos Kafka SIN tocar el Dominio. Podríamos agregar RabbitMQ haciendo otra implementación sin romper el `Service`. |
 | **L** | **LSP** (Sustitución de Liskov) | `MemoryRepo` | `MemoryRepo` cumple con `ports.HeroRepository` igual que lo haría un `PostgresRepo`. El Servicio no sabe la diferencia. |
-| **I** | **ISP** (Segregación de Interfaz) | `HeroRepository` vs `EventBus` | El servicio depende de dos interfaces pequeñas (`Repository` y `EventBus`) en lugar de una interfaz gigante `GodInterface`. |
-| **D** | **DIP** (Inversión de Dependencias) | `herosrv.New(repo, bus)` | El Servicio PIDE sus dependencias (interfaces), no las crea ("new Kafka()"). El `main.go` se las inyecta. |
+### Integración con Plataforma (Infraestructura)
+
+Este microservicio es "Cloud Agnostic" pero depende de que exista una infraestructura de mensajería.
+Usaremos **Platform Kafka Admin** para proveer esa infra.
+
+1.  **Levantar Plataforma** (si no está corriendo): `docker-compose up -d` en `projects/platform-kafka-admin`.
+2.  **Provisionar Recurso (Topic)**:
+    ```bash
+    # Pedimos a la plataforma que nos de un canal de comunicación
+    curl -X POST -d '{"name":"hero-events-05"}' http://localhost:3000/topics
+    ```
+3.  **Ejecutar Servicio**:
+    Nuestro código se conectará automáticamente al puerto `9094` (definido por la plataforma).
+ | El Servicio PIDE sus dependencias (interfaces), no las crea ("new Kafka()"). El `main.go` se las inyecta. |
 
 ## 4. Conclusión
 

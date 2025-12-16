@@ -33,25 +33,22 @@ sequenceDiagram
     Srv->>Repo: Save(*Hero)
     
     activate Repo
-    Note right of Repo: Interface Polimórfica
-    Repo->>Kafka: Save(*Hero)
-    
-    activate Kafka
-    Note right of Kafka: Capa Infra (Driven)
-    Kafka->>Kafka: Serialize JSON
-    Kafka->>Kafka: Publish to Topic
-    Kafka-->>Repo: Success
-    deactivate Kafka
-    
-    Repo-->>Srv: Success
-    deactivate Repo
-    
-    Srv-->>CLI: Success
-    deactivate Srv
-    
-    CLI-->>User: "Operación Exitosa"
-    deactivate CLI
-```
+### 1. La Infraestructura: Plataforma Central
+
+En lugar de levantar un Kafka para cada microservicio (lo cual es pesado y difícil de mantener), usaremos nuestra **Plataforma Central (`projects/platform-kafka-admin`)**.
+
+1.  Asegúrate de que la Plataforma esté corriendo:
+    ```bash
+    cd projects/platform-kafka-admin
+    docker-compose up -d
+    go run cmd/admin-api/main.go
+    ```
+2.  Crea el Topic necesario para este proyecto:
+    ```bash
+    curl -X POST -d '{"name":"hero-events-04"}' http://localhost:3000/topics
+    ```
+
+El repositorio de Kafka (`kafka_repo.go`) **YA NO crea topics**. Asume que la infraestructura existe y es gestionada por la Plataforma.
 
 ## 2. Handler vs Service: ¿Quién hace qué?
 

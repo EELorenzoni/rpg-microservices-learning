@@ -18,6 +18,10 @@ func NewAdminService(brokerAddress string) *AdminService {
 }
 
 // CreateTopic creates a new topic.
+// 🎓 KAFKA EXPERT:
+// Crear un topic es una operación administrativa.
+// No usamos un "Writer" (que es para mandar mensajes), sino que hacemos "Dial" (llamada directa)
+// al controlador del cluster para reservar los recursos (particiones en disco).
 func (s *AdminService) CreateTopic(name string, partitions, replicas int) error {
 	conn, err := kafka.Dial("tcp", s.brokerAddress)
 	if err != nil {
@@ -25,6 +29,9 @@ func (s *AdminService) CreateTopic(name string, partitions, replicas int) error 
 	}
 	defer conn.Close()
 
+	// Configuración del Topic
+	// - Particiones: Definen el paralelismo máximo (cuántos consumers simultáneos).
+	// - Replicación: Define la tolerancia a fallos (cuántos brokers pueden morir).
 	topicConfig := kafka.TopicConfig{
 		Topic:             name,
 		NumPartitions:     partitions,
@@ -39,6 +46,9 @@ func (s *AdminService) CreateTopic(name string, partitions, replicas int) error 
 }
 
 // ListTopics returns all topic names.
+// 🎓 KAFKA EXPERT:
+// Leemos la metadata del cluster (`ReadPartitions`).
+// Kafka almacena qué topics existen y dónde están sus particiones.
 func (s *AdminService) ListTopics() ([]string, error) {
 	conn, err := kafka.Dial("tcp", s.brokerAddress)
 	if err != nil {
