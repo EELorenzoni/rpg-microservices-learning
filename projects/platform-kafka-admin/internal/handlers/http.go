@@ -17,9 +17,10 @@ func NewAdminHandler(service *core.AdminService) *AdminHandler {
 
 // CreateTopicRequest DTO
 type CreateTopicRequest struct {
-	Name       string `json:"name" binding:"required"`
-	Partitions int    `json:"partitions"`
-	Replicas   int    `json:"replicas"`
+	Name       string            `json:"name" binding:"required"`
+	Partitions int               `json:"partitions"`
+	Replicas   int               `json:"replicas"`
+	Config     map[string]string `json:"config"` // 🎓 Optional: retention.ms, etc.
 }
 
 func (h *AdminHandler) CreateTopic(c *gin.Context) {
@@ -37,7 +38,7 @@ func (h *AdminHandler) CreateTopic(c *gin.Context) {
 		req.Replicas = 1
 	}
 
-	if err := h.service.CreateTopic(req.Name, req.Partitions, req.Replicas); err != nil {
+	if err := h.service.CreateTopic(req.Name, req.Partitions, req.Replicas, req.Config); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

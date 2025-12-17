@@ -17,12 +17,12 @@ func NewAdminService(brokerAddress string) *AdminService {
 	}
 }
 
-// CreateTopic creates a new topic.
+// CreateTopic creates a new topic with optional configuration.
 // 🎓 KAFKA EXPERT:
-// Crear un topic es una operación administrativa.
-// No usamos un "Writer" (que es para mandar mensajes), sino que hacemos "Dial" (llamada directa)
-// al controlador del cluster para reservar los recursos (particiones en disco).
-func (s *AdminService) CreateTopic(name string, partitions, replicas int) error {
+// Configuration (Config entries) allows us to define:
+// - Retention (How long to keep messages?)
+// - Cleanup Policy (Delete old logs or Compact them?)
+func (s *AdminService) CreateTopic(name string, partitions, replicas int, config map[string]string) error {
 	conn, err := kafka.Dial("tcp", s.brokerAddress)
 	if err != nil {
 		return fmt.Errorf("failed to dial kafka: %w", err)
@@ -30,12 +30,19 @@ func (s *AdminService) CreateTopic(name string, partitions, replicas int) error 
 	defer conn.Close()
 
 	// Configuración del Topic
-	// - Particiones: Definen el paralelismo máximo (cuántos consumers simultáneos).
-	// - Replicación: Define la tolerancia a fallos (cuántos brokers pueden morir).
 	topicConfig := kafka.TopicConfig{
 		Topic:             name,
 		NumPartitions:     partitions,
 		ReplicationFactor: replicas,
+		ConfigEntries:     []kafka.ConfigEntry{},
+	}
+
+	// 🎓 Map config map to Kafka ConfigEntry
+	for k, v := range config {
+		topicConfig.ConfigEntries = append(topicConfig.ConfigEntries, kafka.ConfigEntry{
+			ConfigName:  k,
+			ConfigValue: v,
+		})
 	}
 
 	err = conn.CreateTopics(topicConfig)

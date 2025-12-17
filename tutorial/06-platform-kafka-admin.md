@@ -94,15 +94,57 @@ curl -X POST -d '{"name":"inventory-updates", "partitions":1, "replicas":1}' htt
 }
 ```
 
-### Paso 3: Verificación
-¿Olvidaste qué topics existen? Consúltalos.
-
 ```bash
 curl http://localhost:3000/topics
 # ["hero-events-05", "inventory-updates"]
 ```
 
-## 4. Panel Visual (Kafka UI)
+## 4. Administración Profesional (Retention & Cleanup)
+
+En producción, no puedes dejar que los topics crezcan infinitamente (te quedarás sin disco).
+Nuestra API ha evolucionado para permitir configuraciones avanzadas.
+
+### A. Política de Retención (Retention)
+¿Cuánto tiempo viven los mensajes?
+-   **Default**: 7 días (normalmente).
+-   **Nuestra API**: Puedes especificarlo en milisegundos (`retention.ms`).
+
+**Ejemplo: Topic de Logs (Borrar cada 24hs)**
+```bash
+curl -X POST http://localhost:3000/topics \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "system-logs",
+    "partitions": 2,
+    "replicas": 1,
+    "config": {
+        "retention.ms": "86400000"
+    }
+}'
+```
+
+### B. Compactación (Log Compaction)
+Para topics que guardan el "último estado" (ej: Inventario de un Jugador), no nos interesa el historial, solo el valor final.
+-   **cleanup.policy**: `delete` (borrar por tiempo) vs `compact` (borrar antiguos si hay uno nuevo con la misma Key).
+
+**Ejemplo: Topic de Estado de Jugador (Compactado)**
+```bash
+curl -X POST http://localhost:3000/topics \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "player-states",
+    "partitions": 1,
+    "replicas": 1,
+    "config": {
+        "cleanup.policy": "compact",
+        "min.cleanable.dirty.ratio": "0.01"
+    }
+}'
+```
+
+> **Nota**: `compact` requiere que tus mensajes siempre tengan **Key** ( userID, itemID, etc).
+
+## 5. Panel Visual (Kafka UI)
 
 No te gusta la terminal? No hay problema.
 Hemos incluido **Kafka UI** en la plataforma.
@@ -118,7 +160,7 @@ Hemos incluido **Kafka UI** en la plataforma.
 
 Usa este panel para depurar visualmente si tus mensajes están llegando.
 
-## 5. Conclusión
+## 6. Conclusión
 
 Has graduado tu arquitectura.
 -   **Antes**: Caos. Cada servicio decidía sobre la infraestructura.
