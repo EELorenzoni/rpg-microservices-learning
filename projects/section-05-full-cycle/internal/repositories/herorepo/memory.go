@@ -30,7 +30,6 @@ func (repo *Memory) Save(hero *domain.Hero) error {
 	return nil
 }
 
-// Get recupera un héroe por ID.
 func (repo *Memory) Get(id string) (*domain.Hero, error) {
 	repo.mu.RLock()
 	defer repo.mu.RUnlock()
@@ -40,4 +39,46 @@ func (repo *Memory) Get(id string) (*domain.Hero, error) {
 		return nil, fmt.Errorf("hero not found with id %s", id)
 	}
 	return hero, nil
+}
+
+// Update actualiza un héroe existente.
+func (repo *Memory) Update(hero *domain.Hero) error {
+	repo.mu.Lock()
+	defer repo.mu.Unlock()
+
+	if _, exists := repo.data[hero.ID]; !exists {
+		return fmt.Errorf("hero not found with id %s", hero.ID)
+	}
+
+	repo.data[hero.ID] = hero
+	fmt.Printf("🔄 INFRA (DB): Actualizando Hero %s\n", hero.Name)
+	return nil
+}
+
+// Delete elimina un héroe por ID.
+func (repo *Memory) Delete(id string) error {
+	repo.mu.Lock()
+	defer repo.mu.Unlock()
+
+	if _, exists := repo.data[id]; !exists {
+		return fmt.Errorf("hero not found with id %s", id)
+	}
+
+	delete(repo.data, id)
+	fmt.Printf("🗑️ INFRA (DB): Eliminando Hero %s. Total records: %d\n", id, len(repo.data))
+	return nil
+}
+
+// List retorna todos los héroes.
+func (repo *Memory) List() ([]*domain.Hero, error) {
+	repo.mu.RLock()
+	defer repo.mu.RUnlock()
+
+	heroes := make([]*domain.Hero, 0, len(repo.data))
+	for _, hero := range repo.data {
+		heroes = append(heroes, hero)
+	}
+
+	fmt.Printf("📋 INFRA (DB): Listando %d héroes\n", len(heroes))
+	return heroes, nil
 }

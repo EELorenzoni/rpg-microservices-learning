@@ -23,26 +23,24 @@ func NewCLIHandler(service *herosrv.Service) *CLIHandler {
 
 // CreateHeroSimulated simula que un usuario tipea un comando en la terminal.
 // Recibe "strings" crudos (simulando argv) y orquesta la llamada.
-func (h *CLIHandler) CreateHeroSimulated(id string, name string) {
-	fmt.Printf("\n🎮 HANDLER (CLI): Recibido input usuario -> ID: %s, Name: %s\n", id, name)
+func (h *CLIHandler) CreateHeroSimulated(name string) {
+	fmt.Printf("\n🎮 HANDLER (CLI): Recibido input usuario -> Name: %s\n", name)
 
 	// 1. DTO/Command Mapping: Convertir input externo a Estructura de Dominio (Command)
 	cmd := herosrv.CreateHeroCommand{
-		ID:    id,
 		Name:  name,
 		Power: 90, // En un caso real, esto podría venir de un flag o default
 	}
 
 	// 2. Llamar al Servicio (Use Case)
 	start := time.Now()
-	// Renombrado: Run -> Create
-	err := h.service.Create(cmd)
+	hero, err := h.service.Create(cmd)
 
 	// 3. Manejar Respuesta (Output)
 	if err != nil {
 		fmt.Printf("❌ HANDLER: Error: %v\n", err)
 	} else {
 		duration := time.Since(start)
-		fmt.Printf("✅ HANDLER: Operación exitosa en %v.\n", duration)
+		fmt.Printf("✅ HANDLER: Héroe %s creado con ID %s en %v.\n", hero.Name, hero.ID, duration)
 	}
 }

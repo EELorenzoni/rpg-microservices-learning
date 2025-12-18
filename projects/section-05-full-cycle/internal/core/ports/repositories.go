@@ -15,4 +15,13 @@ type HeroRepository interface {
 
 	// Get busca un héroe por ID.
 	Get(id string) (*domain.Hero, error)
+
+	// Update actualiza un héroe existente.
+	Update(hero *domain.Hero) error
+
+	// Delete elimina un héroe por ID.
+	Delete(id string) error
+
+	// List retorna todos los héroes.
+	List() ([]*domain.Hero, error)
 }

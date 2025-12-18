@@ -42,11 +42,13 @@ func NewKafka(brokerAddress string, topic string) *Kafka {
 func (repo *Kafka) Publish(hero *domain.Hero, eventType string) error {
 	// 1. Enriquecer el evento (CloudEvents style - simplificado)
 	event := struct {
-		Type string       `json:"type"`
-		Data *domain.Hero `json:"data"`
+		EventType  string       `json:"event_type"`
+		OccurredAt time.Time    `json:"occurred_at"`
+		Data       *domain.Hero `json:"data"`
 	}{
-		Type: eventType,
-		Data: hero,
+		EventType:  eventType,
+		OccurredAt: time.Now(),
+		Data:       hero,
 	}
 
 	// 2. Serializar

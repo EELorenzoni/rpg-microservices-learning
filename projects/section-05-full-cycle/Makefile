@@ -1,4 +1,4 @@
-.PHONY: init up down logs run
+.PHONY: all init run-api run-consumer
 
 # Default: inicializa y ejecuta la demo
 all: init run-api
@@ -13,9 +13,4 @@ run-api:
 run-consumer:
 	go run cmd/consumer/main.go
 
-up:
-	docker-compose -f ../../docker-compose.yml up -d
-
-down:
-	docker-compose -f ../../docker-compose.yml down
 

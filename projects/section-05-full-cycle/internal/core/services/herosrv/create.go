@@ -4,36 +4,46 @@ import (
 	"fmt"
 
 	"github.com/EELorenzoni/rpg-microservices-learning/section-05/internal/core/domain"
+	"github.com/google/uuid"
 )
 
 // CreateHeroCommand: DTO (Data Transfer Object).
 type CreateHeroCommand struct {
-	ID    string
 	Name  string
 	Power int
 }
 
 // Create ejecuta la lógica de creación de un héroe.
 // Renombrado de Run a Create para mayor claridad.
-func (s *Service) Create(cmd CreateHeroCommand) error {
+func (s *Service) Create(cmd CreateHeroCommand) (*domain.Hero, error) {
 	fmt.Printf("➡️  CORE (Service): Orquestando creación de %s\n", cmd.Name)
 
-	// 1. Llamar al Dominio (Factory)
-	hero, err := domain.NewHero(cmd.ID, cmd.Name)
+	// 1. Generar ID único
+	heroID := uuid.New().String()
+
+	// 2. Llamar al Dominio (Factory)
+	hero, err := domain.NewHero(heroID, cmd.Name)
 	if err != nil {
-		return fmt.Errorf("error creando hero: %w", err)
+		// Publicar evento de fallo
+		s.eventBus.Publish(&domain.Hero{ID: heroID, Name: cmd.Name}, "HeroCreateFailed")
+		return nil, fmt.Errorf("error creando hero: %w", err)
 	}
 
-	// 2. Persistencia (Base de Datos)
+	// 3. Persistencia (Base de Datos)
 	if err := s.repo.Save(hero); err != nil {
-		return fmt.Errorf("error guardando en DB: %w", err)
+		// Publicar evento de fallo
+		s.eventBus.Publish(hero, "HeroCreateFailed")
+		return nil, fmt.Errorf("error guardando en DB: %w", err)
 	}
 
-	// 3. Notificación (Event Bus)
+	fmt.Printf("✅ CORE: Hero %s guardado en la base de datos.\n", hero.Name)
+
+	// 4. Publicar evento de éxito
 	if err := s.eventBus.Publish(hero, "HeroCreated"); err != nil {
-		fmt.Printf("⚠️ WARN: Héroe guardado, pero falló el evento: %v\n", err)
+		fmt.Printf("⚠️ WARN: Hero guardado en DB, pero falló publicación del evento: %v\n", err)
+	} else {
+		fmt.Printf("📨 CORE: Evento 'HeroCreated' publicado correctamente.\n")
 	}
 
-	fmt.Printf("✅ CORE: Hero %s procesado y guardado.\n", hero.Name)
-	return nil
+	return hero, nil
 }

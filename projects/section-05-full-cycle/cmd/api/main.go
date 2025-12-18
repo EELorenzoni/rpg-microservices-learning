@@ -30,13 +30,31 @@ func main() {
 
 	// 4. ROUTER & SERVER
 	http.HandleFunc("/heroes", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodPost:
-			handler.CreateHero(w, r)
-		case http.MethodGet:
-			handler.GetHero(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		// Si tiene query param "id", es operación sobre un héroe específico
+		id := r.URL.Query().Get("id")
+
+		if id != "" {
+			// Operaciones sobre un héroe específico
+			switch r.Method {
+			case http.MethodGet:
+				handler.GetHero(w, r)
+			case http.MethodPut:
+				handler.UpdateHero(w, r)
+			case http.MethodDelete:
+				handler.DeleteHero(w, r)
+			default:
+				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			}
+		} else {
+			// Operaciones sobre la colección
+			switch r.Method {
+			case http.MethodPost:
+				handler.CreateHero(w, r)
+			case http.MethodGet:
+				handler.ListHeroes(w, r)
+			default:
+				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			}
 		}
 	})
 
