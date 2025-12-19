@@ -52,7 +52,7 @@ Construimos un **Sistema de Gestión de Héroes (RPG)** con arquitectura empresa
 - Admin API (REST) para crear/eliminar topics
 - Kafka UI para visualización
 - Configuración profesional (.env, validación estricta)
-- **Tutorial**: `06-platform-kafka-admin.md`
+- **Guía**: `tutorial/platform-kafka-admin-guide.md`
 
 #### 2. **Hero Service** (`projects/section-05-full-cycle`)
 - **CRUD Completo**:
@@ -73,11 +73,13 @@ Construimos un **Sistema de Gestión de Héroes (RPG)** con arquitectura empresa
   - Hexagonal (Ports & Adapters)
   - Vertical Slicing por operación
   - Dependency Injection
-- **Tutorial**: `05-ciclo-completo-solid.md`
+- **Tutorial**: `tutorial/05-ciclo-completo-solid.md`
 
-#### 3. **Tutoriales Avanzados**
-- `07-kafka-production-guide.md`: Guía operacional de Kafka (Parámetros, Replicación, Consumer Groups, DLQ)
-- `08-kafka-event-flow.md`: Análisis profundo del flujo de mensajes (Key, Partition, Offset, Idempotencia)
+#### 3. **Battle System** (`projects/section-06-battle-system`)
+- **Concepto**: Combate asíncrono entre héroes.
+- **Mecánica**: Basada en eventos de turnos para mayor escalabilidad.
+- **Integración**: HTTP Client a Hero Service + Kafka para orquestación.
+- **Guía**: `tutorial/06-battle-system.md`
 
 #### 4. **Conceptos Enseñados**
 - Kafka: Topics, Partitions, Replicas, Offsets, Consumer Groups

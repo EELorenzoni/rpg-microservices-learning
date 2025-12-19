@@ -299,87 +299,41 @@ DELETE /heroes?id=abc-123                → DeleteHero
 
 ### 4.1 Guía de Producción
 
-**Prompt para Tutorial 07:**
+**Prompt para Guía de Plataforma:**
 
 ```markdown
-TAREA: Crear tutorial "Kafka en Producción"
+TAREA: Consolidar guías de Kafka
 
-Documento: 07-kafka-production-guide.md
+Documento: platform-kafka-admin-guide.md
 
 Secciones:
-1. Parámetros exhaustivos de topics:
-   - min.insync.replicas
-   - retention.ms
-   - cleanup.policy (delete vs compact)
-   - compression.type
-2. Viaje de un evento (Producer → Broker → Consumer)
-   - Diagrama de secuencia Mermaid
-3. Consumer Groups explicados
-   - Rebalanceo
-   - Asignación de particiones
-4. Semántica de entrega:
-   - At-least-once
-   - At-most-once
-   - Exactly-once (con limitaciones reales)
-5. Estrategias de error (DLQ, Retries)
-6. Checklist de producción
-
-Tono: Ingeniero Senior, sin marketing, con experiencia real operando Kafka.
+1. Arquitectura Centralizada
+2. Parámetros Críticos (partitions, replicas, retention)
+3. Viaje del Evento (Mermaid sequenceDiagram)
+4. Idempotencia y DLQ
+5. Checklist de Producción
 ```
 
 ### 4.2 Análisis de Flujo de Mensajes
 
-**Prompt para Tutorial 08:**
-
-```markdown
-TAREA: Crear tutorial "Flujo del Mensaje Real"
-
-Documento: 08-kafka-event-flow.md
-
-Explicar usando el evento HeroCreated:
-1. Anatomía de un mensaje Kafka:
-   - Topic, Key, Value, Headers, Partition, Offset
-2. Por qué la Key importa (ordenamiento, hot partitions)
-3. Responsabilidad del Consumer:
-   - Idempotencia (UPSERT, no INSERT)
-   - Manejo de duplicados
-4. Ejemplo JSON real del evento
-
-Incluir advertencias:
-- Orden solo existe DENTRO de una partición
-- Duplicados son inevitables (network failures)
-- Consumer debe ser idempotente
-```
+(Esta sección ha sido integrada en `platform-kafka-admin-guide.md`)
 
 ---
 
 ## 📂 Fase 5: Documentación Completa
 
-**Prompt para Tutorial 05:**
+**Prompt para Tutoriales de Hero y Battle System:**
 
 ```markdown
-TAREA: Crear tutorial completo "Ciclo Completo y SOLID"
+TAREA: Crear tutoriales detallados
 
-Documento: 05-ciclo-completo-solid.md
+Documentos: 05-ciclo-completo-solid.md, 06-battle-system.md
 
-Contenidos:
-1. Diagrama de secuencia Mermaid (dark theme):
-   - Flujo Create con éxito
-   - Flujo Create con fallo
-   - Consumer con DLQ
-2. Estructura del proyecto (Vertical Slicing)
-3. Tabla SOLID con ejemplos concretos del código
-4. Sección de pruebas con comandos curl:
-   - Crear héroe (sin ID)
-   - Listar héroes
-   - Consultar uno
-   - Actualizar
-   - Eliminar
-   - Probar fallo (name vacío)
-   - Ver DLQ en acción
-5. Logs esperados del Consumer
-
-Nota: IDs se generan automáticamente, no se envían en requests
+Contenidos para 06-battle-system:
+1. Arquitectura de Integración (Client a Hero Service)
+2. Bucle de Batalla Asíncrono (Event-Driven)
+3. Estructura de Eventos (BattleStarted, TurnProcessed, BattleEnded)
+4. Guía de Uso (endpoints POST/GET)
 ```
 
 ---
