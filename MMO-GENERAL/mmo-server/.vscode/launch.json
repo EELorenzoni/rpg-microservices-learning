@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug MMO Server",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/main.go",
+            "env": {},
+            "args": [],
+            "dlvFlags": [
+                "--check-go-version=false"
+            ],
+            "showLog": true
+        }
+    ]
+}
