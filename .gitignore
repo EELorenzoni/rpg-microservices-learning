@@ -4,6 +4,7 @@
 *.so
 *.dylib
 bin/
+build/
 
 # Test binary
 *.test
@@ -13,8 +14,35 @@ bin/
 
 # OS Specific
 .DS_Store
+Thumbs.db
 
 # IDEs
-# .vscode/
+.vscode/
 .idea/
+.vs/
+*.swp
+*.swo
+
+# Unreal Engine
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Build/
+FileOpenOrder/
+DerivedData/
+*.log
+*.pdb
+*.obj
+**/Binaries/
+**/Intermediate/
+**/Saved/
+**/DerivedDataCache/
+**/Build/
+
+# Environment
+.env
+.env.*
+
+# Debug
 __debug_bin*
